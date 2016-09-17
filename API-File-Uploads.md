@@ -37,7 +37,7 @@ var myStorage = new keystone.Storage({
 });
 
 FileUpload.add({
-	name: { type: Types.Key, index: true},
+  name: { type: Types.Key, index: true},
   file: { 
     type: Types.File,
     storage: myStorage
@@ -66,7 +66,7 @@ Feel free to take them out, and it won't hurt anything if you leave them in
 Now we are going to create an API that can be used to upload and download files to KeystoneJS. This is a two step process. The first step is adding the following lines 
 under the *File Upload Route* block to the `routes/index.js` file:
 
-'''javascript
+```javascript
 var keystone = require('keystone');
 var middleware = require('./middleware');
 var importRoutes = keystone.importer(__dirname);
