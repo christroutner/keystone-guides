@@ -204,14 +204,15 @@ exports.remove = function(req, res) {
       item.remove(function (err) {
 
         if (err) return res.apiError('database error', err);
-          //Delete the file
-          exec('rm public/uploads/files/'+fileId+'.*', function(err, stdout, stderr) { 
-            if (err) { 
-                console.log('child process exited with error code ' + err.code); 
-                return; 
-            } 
-            console.log(stdout); 
-          });
+        
+        //Delete the file
+        exec('rm public/uploads/files/'+fileId+'.*', function(err, stdout, stderr) { 
+          if (err) { 
+              console.log('child process exited with error code ' + err.code); 
+              return; 
+          } 
+          console.log(stdout); 
+        });
 
         return res.apiResponse({
           success: true
