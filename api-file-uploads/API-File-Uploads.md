@@ -194,30 +194,31 @@ exports.create = function(req, res) {
  * Delete File by ID
  */
 exports.remove = function(req, res) {
-	var fileId = req.params.id;
-	FileData.model.findById(req.params.id).exec(function (err, item) {
+  var fileId = req.params.id;
+  FileData.model.findById(req.params.id).exec(function (err, item) {
 
-		if (err) return res.apiError('database error', err);
-		if (!item) return res.apiError('not found');
-		
-		item.remove(function (err) {
+    if (err) return res.apiError('database error', err);
+    
+    if (!item) return res.apiError('not found');
 
-			if (err) return res.apiError('database error', err);
-        //Delete the file
-        exec('rm public/uploads/files/'+fileId+'.*', function(err, stdout, stderr) { 
-          if (err) { 
-              console.log('child process exited with error code ' + err.code); 
-              return; 
-          } 
-          console.log(stdout); 
+      item.remove(function (err) {
+
+        if (err) return res.apiError('database error', err);
+          //Delete the file
+          exec('rm public/uploads/files/'+fileId+'.*', function(err, stdout, stderr) { 
+            if (err) { 
+                console.log('child process exited with error code ' + err.code); 
+                return; 
+            } 
+            console.log(stdout); 
+          });
+
+        return res.apiResponse({
+          success: true
         });
+    });
 
-			return res.apiResponse({
-				success: true
-			});
-		});
-		
-	});
+  });
 }
 ```
 ## Create the upload directory
