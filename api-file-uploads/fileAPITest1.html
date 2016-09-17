@@ -23,7 +23,7 @@
   </form>
   <br>
   <div>
-  <h2>Upload File List:</h2>
+  <h2>Uploaded File List:</h2>
     <ul id="file_list">
     </ul>
   </div>
@@ -71,9 +71,10 @@
           $.get('/api/fileupload/'+data.file_upload._id+'/update', data.file_upload, function(data) {
             //debugger;
             
-            log.push('File information updated.');
+            console.log('File information updated.');
             
-            
+            //Add the uploaded file to the uploaded file list.
+            $('#file_list').append('<li><a href="'+data.collection.url+'" download>'+data.collection.name+'</a></li>');
             
           })
           //If the metadata update fails:
