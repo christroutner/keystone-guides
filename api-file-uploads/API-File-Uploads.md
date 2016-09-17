@@ -348,8 +348,8 @@ won't start after you create the new API files, go back and check your code.
 </html>
 ```
 
-## Gotcha: Two POST Calls Needed
-You'll notice that in `fileAPITest.html` there are two POST calls. The first uploads the file itself. The second updates the metadata for the file entry in the database.
+## Gotcha: Two HTTP Calls Needed
+You'll notice that in `fileAPITest.html` there is a POST call followed by a GET call. The first uploads the file itself. The second updates the metadata for the file entry in the database.
 It's irritating to make two server calls instead of one, but right now that's the way it has to be.
 
 
