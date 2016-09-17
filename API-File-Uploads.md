@@ -77,34 +77,152 @@ keystone.pre('render', middleware.flashMessages);
 
 // Import Route Controllers
 var routes = {
-        views: importRoutes('./views'),
+  views: importRoutes('./views'),
 };
 
 // Setup Route Bindings
 exports = module.exports = function (app) {
-        // Views
-        app.get('/', routes.views.index);
-        app.get('/blog/:category?', routes.views.blog);
-        app.get('/blog/post/:post', routes.views.post);
-        app.get('/gallery', routes.views.gallery);
-        app.all('/contact', routes.views.contact);
+  // Views
+  app.get('/', routes.views.index);
+  app.get('/blog/:category?', routes.views.blog);
+  app.get('/blog/post/:post', routes.views.post);
+  app.get('/gallery', routes.views.gallery);
+  app.all('/contact', routes.views.contact);
 
-	  //File Upload Route
-	  app.get('/api/fileupload/list', keystone.middleware.api, routes.api.fileupload.list);
-	  app.get('/api/fileupload/:id', keystone.middleware.api, routes.api.fileupload.get);
-	  app.all('/api/fileupload/:id/update', keystone.middleware.api, routes.api.fileupload.update);
-	  app.all('/api/fileupload/create', keystone.middleware.api, routes.api.fileupload.create);
-	  app.get('/api/fileupload/:id/remove', keystone.middleware.api, routes.api.fileupload.remove);
+  //File Upload Route
+  app.get('/api/fileupload/list', keystone.middleware.api, routes.api.fileupload.list);
+  app.get('/api/fileupload/:id', keystone.middleware.api, routes.api.fileupload.get);
+  app.all('/api/fileupload/:id/update', keystone.middleware.api, routes.api.fileupload.update);
+  app.all('/api/fileupload/create', keystone.middleware.api, routes.api.fileupload.create);
+  app.get('/api/fileupload/:id/remove', keystone.middleware.api, routes.api.fileupload.remove);
 
-        // NOTE: To protect a route so that only admins can see it, use the requireUser middleware:
-        // app.get('/protected', middleware.requireUser, routes.views.protected);
+  // NOTE: To protect a route so that only admins can see it, use the requireUser middleware:
+  // app.get('/protected', middleware.requireUser, routes.views.protected);
 
 };
 ```
 
+## Create the API Handler
 The second step is to create the new file `routes/api/fileupload.js`. If the `routes/api` directory doesn't exist,
 you'll need to create it. Copy the code below into `routes/api/fileupload.js`.
 
+```
+var async = require('async'),
+keystone = require('keystone');
+var exec = require('child_process').exec;
+
+var FileData = keystone.list('FileUpload');
+
+/**
+ * List Files
+ */
+exports.list = function(req, res) {
+        FileData.model.find(function(err, items) {
+
+                if (err) return res.apiError('database error', err);
+
+                res.apiResponse({
+                        collections: items
+                });
+
+        });
+}
+
+/**
+ * Get File by ID
+ */
+exports.get = function(req, res) {
+
+        FileData.model.findById(req.params.id).exec(function(err, item) {
+
+                if (err) return res.apiError('database error', err);
+                if (!item) return res.apiError('not found');
+
+                res.apiResponse({
+                        collection: item
+                });
+
+        });
+}
+
+
+/**
+ * Update File by ID
+ */
+exports.update = function(req, res) {
+        FileData.model.findById(req.params.id).exec(function(err, item) {
+
+                if (err) return res.apiError('database error', err);
+                if (!item) return res.apiError('not found');
+
+                var data = (req.method == 'POST') ? req.body : req.query;
+
+                item.getUpdateHandler(req).process(data, function(err) {
+
+                        if (err) return res.apiError('create error', err);
+
+                        res.apiResponse({
+                                collection: item
+                        });
+
+                });
+
+        });
+}
+
+/**
+ * Upload a New File
+ */
+exports.create = function(req, res) {
+
+        var item = new FileData.model(),
+		data = (req.method == 'POST') ? req.body : req.query;
+
+        item.getUpdateHandler(req).process(req.files, function(err) {
+
+                if (err) return res.apiError('error', err);
+
+                res.apiResponse({
+                        file_upload: item
+                });
+
+        });
+}
+
+/**
+ * Delete File by ID
+ * Note: This will only delete the database entry. The file will still exist on the drive of the server.
+ */
+exports.remove = function(req, res) {
+	var fileId = req.params.id;
+	FileData.model.findById(req.params.id).exec(function (err, item) {
+
+		if (err) return res.apiError('database error', err);
+		if (!item) return res.apiError('not found');
+		
+		item.remove(function (err) {
+
+			if (err) return res.apiError('database error', err);
+			
+			//Delete the file
+      			exec('rm public/uploads/files/'+fileId+'.*', function(err, stdout, stderr) { 
+		          if (err) { 
+		              console.log('child process exited with error code ' + err.code); 
+		              return; 
+		          } 
+		          console.log(stdout); 
+		        });
+
+			return res.apiResponse({
+				success: true
+			});
+		});
+		
+	});
+}
+```
+## Create the upload directory
+Finally, you'll want to create the `public/uploads/files` directory. This is where files will be end up when uploaded via the API.
 
 
 ## Router index.js
