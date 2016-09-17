@@ -117,15 +117,15 @@ var FileData = keystone.list('FileUpload');
  * List Files
  */
 exports.list = function(req, res) {
-        FileData.model.find(function(err, items) {
+  FileData.model.find(function(err, items) {
 
-                if (err) return res.apiError('database error', err);
+    if (err) return res.apiError('database error', err);
 
-                res.apiResponse({
-                        collections: items
-                });
+    res.apiResponse({
+      collections: items
+    });
 
-        });
+  });
 }
 
 /**
@@ -133,16 +133,16 @@ exports.list = function(req, res) {
  */
 exports.get = function(req, res) {
 
-        FileData.model.findById(req.params.id).exec(function(err, item) {
+  FileData.model.findById(req.params.id).exec(function(err, item) {
 
-                if (err) return res.apiError('database error', err);
-                if (!item) return res.apiError('not found');
+    if (err) return res.apiError('database error', err);
+    if (!item) return res.apiError('not found');
 
-                res.apiResponse({
-                        collection: item
-                });
+    res.apiResponse({
+      collection: item
+    });
 
-        });
+  });
 }
 
 
@@ -150,24 +150,22 @@ exports.get = function(req, res) {
  * Update File by ID
  */
 exports.update = function(req, res) {
-        FileData.model.findById(req.params.id).exec(function(err, item) {
+  FileData.model.findById(req.params.id).exec(function(err, item) {
+    if (err) return res.apiError('database error', err);
+    if (!item) return res.apiError('not found');
 
-                if (err) return res.apiError('database error', err);
-                if (!item) return res.apiError('not found');
+    var data = (req.method == 'POST') ? req.body : req.query;
 
-                var data = (req.method == 'POST') ? req.body : req.query;
+    item.getUpdateHandler(req).process(data, function(err) {
 
-                item.getUpdateHandler(req).process(data, function(err) {
+      if (err) return res.apiError('create error', err);
 
-                        if (err) return res.apiError('create error', err);
+      res.apiResponse({
+        collection: item
+      });
 
-                        res.apiResponse({
-                                collection: item
-                        });
-
-                });
-
-        });
+    });
+  });
 }
 
 /**
@@ -175,23 +173,22 @@ exports.update = function(req, res) {
  */
 exports.create = function(req, res) {
 
-        var item = new FileData.model(),
-		data = (req.method == 'POST') ? req.body : req.query;
+  var item = new FileData.model(),
+  data = (req.method == 'POST') ? req.body : req.query;
 
-        item.getUpdateHandler(req).process(req.files, function(err) {
+  item.getUpdateHandler(req).process(req.files, function(err) {
 
-                if (err) return res.apiError('error', err);
+    if (err) return res.apiError('error', err);
 
-                res.apiResponse({
-                        file_upload: item
-                });
+    res.apiResponse({
+      file_upload: item
+    });
 
-        });
+  });
 }
 
 /**
  * Delete File by ID
- * Note: This will only delete the database entry. The file will still exist on the drive of the server.
  */
 exports.remove = function(req, res) {
 	var fileId = req.params.id;
@@ -204,14 +201,14 @@ exports.remove = function(req, res) {
 
 			if (err) return res.apiError('database error', err);
 			
-			//Delete the file
-      			exec('rm public/uploads/files/'+fileId+'.*', function(err, stdout, stderr) { 
-		          if (err) { 
-		              console.log('child process exited with error code ' + err.code); 
-		              return; 
-		          } 
-		          console.log(stdout); 
-		        });
+			 //Delete the file
+        exec('rm public/uploads/files/'+fileId+'.*', function(err, stdout, stderr) { 
+          if (err) { 
+              console.log('child process exited with error code ' + err.code); 
+              return; 
+          } 
+          console.log(stdout); 
+        });
 
 			return res.apiResponse({
 				success: true
@@ -224,12 +221,10 @@ exports.remove = function(req, res) {
 ## Create the upload directory
 Finally, you'll want to create the `public/uploads/files` directory. This is where files will be end up when uploaded via the API.
 
-
-## Router index.js
-
-## Create API Handler
-
 # Upload a file
+That's it! Your new API is ready to use. Drop the following code in `public/fileAPITest.html`, start KeystoneJS, and open the
+test file in your web browser. If KeystoneJS is already running you'll need to kill the process and restart it. If KeystoneJS
+won't start after you create the new API files, go back and check your code. 
 
 ## Optional: Turning on CORS
 
