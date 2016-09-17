@@ -268,7 +268,7 @@ won't start after you create the new API files, go back and check your code.
 		});
     
     function uploadFile() {
-      debugger;
+      //debugger;
 
       var selectedFile = $('#file_upload').get(0).files[0];
 
@@ -343,11 +343,14 @@ won't start after you create the new API files, go back and check your code.
 
 ```
 
-## Optional: Turning on CORS
-
 ## Gotcha: Two POST Calls Needed
+You'll notice that in `fileAPITest.html` there are two POST calls. The first uploads the file itself. The second updates the metadata for the file entry in the database.
+It's irritating to make two server calls instead of one, but right now that's the way it has to be.
+
 
 # Download a file
+`fileAPITest.html` creates a list item for each file that is uploaded. The list item includes a link to the file and uses the `download` attribute to tell the browser
+to download the file instead of trying to open it. You can use the example code above to figure out how to generate a download URL when the file is uploaded.
 
 # README
 This guide was originally inspired by [this gist by Jed Watson](https://gist.github.com/JedWatson/9741171#file-routes-index-js-L24) and 
