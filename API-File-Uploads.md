@@ -1,16 +1,16 @@
 # API File and Image Uploads
 
 This guide gives code examples on how to set up an API for File and Image transfers to your KeystoneJS installation. It also shows how to set up the server for
-local file and image hosting. These examples contain the same code used by (ConnextCMS)[http://connextcms.com].
+local file and image hosting. These examples contain the same code used by [ConnextCMS](http://connextcms.com).
 
 ## Setup
 This guide assumes that you have a working version of [KeystoneJS](https://github.com/keystonejs/keystone). All file path references
-assume that you are working from the same directory as the keystone.js file.
+assume that you are working from the same directory as the `keystone.js` file.
 
 # Creating Models
 This guide does not treat images differently than generic files, since they are all files to KeystoneJS. The difference is how you use them
-on the front end once you retrieve the file from the server. With a little of the modification below, you can create a different file model 
-called 'images' and send 'images' to their own directory. 
+on the front end once you retrieve the file from the server. With a little modification of the code below, you can create a different file model 
+called 'images.js' and send 'images' to their own directory. 
 
 
 At any rate, below is an example model that leverages the `Types.File` introduced in KeystoneJS v4.0 Beta. This code should be copied into 
@@ -89,12 +89,14 @@ exports = module.exports = function (app) {
   app.get('/gallery', routes.views.gallery);
   app.all('/contact', routes.views.contact);
 
+  // COPY THE CODE FROM HERE...
   //File Upload Route
   app.get('/api/fileupload/list', keystone.middleware.api, routes.api.fileupload.list);
   app.get('/api/fileupload/:id', keystone.middleware.api, routes.api.fileupload.get);
   app.all('/api/fileupload/:id/update', keystone.middleware.api, routes.api.fileupload.update);
   app.all('/api/fileupload/create', keystone.middleware.api, routes.api.fileupload.create);
   app.get('/api/fileupload/:id/remove', keystone.middleware.api, routes.api.fileupload.remove);
+  // ...TO HERE.
 
   // NOTE: To protect a route so that only admins can see it, use the requireUser middleware:
   // app.get('/protected', middleware.requireUser, routes.views.protected);
