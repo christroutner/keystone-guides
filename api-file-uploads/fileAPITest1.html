@@ -40,6 +40,7 @@
 
       var selectedFile = $('#file_upload').get(0).files[0];
 
+      //Error handling
       if(selectedFile == undefined)
         alert('You did not select a file!');
 		
@@ -47,6 +48,7 @@
       var newFile = new FormData();
       newFile.append('file_upload', selectedFile); //This is the raw file that was selected
 
+      //Set the form options.
       var opts = {
         url: '/api/fileupload/create',
         data: newFile,
@@ -54,6 +56,8 @@
         contentType: false,
         processData: false,
         type: 'POST',
+        
+        //This function is executed when the file uploads successfully.
         success: function(data){
           //Dev Note: KeystoneAPI only allows file and image uploads with the file itself. Any extra metadata will have to
           //be uploaded/updated with a second call.
@@ -61,7 +65,7 @@
           //debugger;
           console.log('File upload succeeded! ID: ' + data.file_upload._id);
 
-          //Fill out the file information
+          //Fill out the file metadata information
           data.file_upload.name = $('#file_name').val();
           data.file_upload.url = '/uploads/files/'+data.file_upload.file.filename;
           data.file_upload.fileType = data.file_upload.file.mimetype;
@@ -77,6 +81,7 @@
             $('#file_list').append('<li><a href="'+data.collection.url+'" download>'+data.collection.name+'</a></li>');
             
           })
+          
           //If the metadata update fails:
           .fail(function(data) {
             debugger;
@@ -101,7 +106,7 @@
         }
       };
 
-      //Execute the AJAX operation.
+      //Execute the AJAX call.
       jQuery.ajax(opts);
       
     }

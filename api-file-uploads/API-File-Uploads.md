@@ -226,7 +226,7 @@ exports.remove = function(req, res) {
 Finally, you'll want to create the `public/uploads/files` directory. This is where files will be end up when uploaded via the API.
 
 # Upload a file
-That's it! Your new API is ready to use. Drop the following code in `public/fileAPITest.html`, start KeystoneJS, and open the
+That's it! Your new API is ready to use. Drop the following code into `public/fileAPITest.html`, start KeystoneJS, and open the
 test file in your web browser. If KeystoneJS is already running you'll need to kill the process and restart it. If KeystoneJS
 won't start after you create the new API files, go back and check your code. 
 
@@ -273,6 +273,7 @@ won't start after you create the new API files, go back and check your code.
 
       var selectedFile = $('#file_upload').get(0).files[0];
 
+      //Error handling
       if(selectedFile == undefined)
         alert('You did not select a file!');
 		
@@ -280,6 +281,7 @@ won't start after you create the new API files, go back and check your code.
       var newFile = new FormData();
       newFile.append('file_upload', selectedFile); //This is the raw file that was selected
 
+      //Set the form options.
       var opts = {
         url: '/api/fileupload/create',
         data: newFile,
@@ -287,6 +289,8 @@ won't start after you create the new API files, go back and check your code.
         contentType: false,
         processData: false,
         type: 'POST',
+        
+        //This function is executed when the file uploads successfully.
         success: function(data){
           //Dev Note: KeystoneAPI only allows file and image uploads with the file itself. Any extra metadata will have to
           //be uploaded/updated with a second call.
@@ -294,7 +298,7 @@ won't start after you create the new API files, go back and check your code.
           //debugger;
           console.log('File upload succeeded! ID: ' + data.file_upload._id);
 
-          //Fill out the file information
+          //Fill out the file metadata information
           data.file_upload.name = $('#file_name').val();
           data.file_upload.url = '/uploads/files/'+data.file_upload.file.filename;
           data.file_upload.fileType = data.file_upload.file.mimetype;
@@ -310,6 +314,7 @@ won't start after you create the new API files, go back and check your code.
             $('#file_list').append('<li><a href="'+data.collection.url+'" download>'+data.collection.name+'</a></li>');
             
           })
+          
           //If the metadata update fails:
           .fail(function(data) {
             debugger;
@@ -334,14 +339,13 @@ won't start after you create the new API files, go back and check your code.
         }
       };
 
-      //Execute the AJAX operation.
+      //Execute the AJAX call.
       jQuery.ajax(opts);
       
     }
 	</script>
 </body>
 </html>
-
 ```
 
 ## Gotcha: Two POST Calls Needed
@@ -351,10 +355,10 @@ It's irritating to make two server calls instead of one, but right now that's th
 
 # Download a file
 `fileAPITest.html` creates a list item for each file that is uploaded. The list item includes a link to the file and uses the `download` attribute to tell the browser
-to download the file instead of trying to open it. You can use the example code above to figure out how to generate a download URL when the file is uploaded.
+to download the file instead of trying to open it. You can use the example code above to figure out how to generate your own download URL for uploaded files.
 
 # README
-This guide was originally inspired by [this gist by Jed Watson](https://gist.github.com/JedWatson/9741171#file-routes-index-js-L24) and 
+This guide was written by [Chris Troutner](http://christroutner.com). It was originally inspired by [this gist by Jed Watson](https://gist.github.com/JedWatson/9741171#file-routes-index-js-L24) and 
 [this tutorial](http://christroutner.com/blog/post/front-end-widgets-part-1-creating-the-db-model) on my own blog. The technique displayed
 here is the same used in the [ConnextCMS](http://connextcms.com) software. ConnextCMS is a front end extension for KeystoneJS that mimicks the
 WordPress user interface.
