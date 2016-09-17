@@ -9,8 +9,8 @@ assume that you are working from the same directory as the `keystone.js` file.
 
 # Creating Models
 This guide does not treat images differently than generic files, since they are all files to KeystoneJS. The difference is how you use them
-on the front end once you retrieve the file from the server. With a little modification of the code below, you can create a different file model 
-called 'images.js' and send 'images' to their own directory. 
+on the front end once you retrieve the file url from the server. With a little modification of the code below, you can create a different file model 
+called 'images.js' along with a corresponding API and send 'images' to their own directory. 
 
 
 At any rate, below is an example model that leverages the `Types.File` introduced in KeystoneJS v4.0 Beta. This code should be copied into 
@@ -63,8 +63,8 @@ A lot of the additional fields like `alt1`, or `category` are metadata and may b
 Feel free to take them out, and it won't hurt anything if you leave them in
 
 # Opening an API in KeystoneJS
-Now we are going to create an API that can be used to upload and download files to KeystoneJS. This is a two step process. The first step is adding the following lines 
-under the *File Upload Route* block to the `routes/index.js` file:
+Now we are going to create an API that can be used to upload and download files to KeystoneJS. This is a two step process. The first step is add a few lines
+of code to the `routes/index.js` file:
 
 ```javascript
 var keystone = require('keystone');
@@ -203,8 +203,7 @@ exports.remove = function(req, res) {
 		item.remove(function (err) {
 
 			if (err) return res.apiError('database error', err);
-			
-			 //Delete the file
+        //Delete the file
         exec('rm public/uploads/files/'+fileId+'.*', function(err, stdout, stderr) { 
           if (err) { 
               console.log('child process exited with error code ' + err.code); 
